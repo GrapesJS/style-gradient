@@ -1,5 +1,6 @@
 import loadComponents from './components';
 import loadBlocks from './blocks';
+import grapesjs from 'grapesjs';
 
 export default grapesjs.plugins.add('gjs-style-gradient', (editor, opts = {}) => {
   let config = opts;
