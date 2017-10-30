@@ -39,7 +39,7 @@ This boilerplate helps you quickly start a production ready plugin for GrapesJS.
 ## Download
 
 * CDN
-  * `https://unpkg.com/grapesjs-style-gradient@0.0.1/dist/grapes.min.js`
+  * `https://unpkg.com/grapesjs-style-gradient`
 * NPM
   * `npm i grapesjs-style-gradient`
 
@@ -89,7 +89,7 @@ Install dependencies
 $ npm i
 ```
 
-The plugin relies on GrapesJS via `peerDependencies` so install it manually (without adding it to package.json)
+The plugin relies on GrapesJS via `peerDependencies` so you have to install it manually (without adding it to package.json)
 
 ```sh
 $ npm i grapesjs --no-save

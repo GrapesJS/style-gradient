@@ -1,8 +1,12 @@
 {
   "name": "grapesjs-style-gradient",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Add gradient input to the Style Manager in GrapesJS",
   "main": "dist/grapesjs-style-gradient.min.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/artf/grapesjs-style-gradient.git"
+  },
   "scripts": {
     "lint": "eslint src",
     "v:patch": "npm version --no-git-tag-version patch",
@@ -50,6 +54,6 @@
     "webpack-dev-server": "^2.5.1"
   },
   "dependencies": {
-    "grapick": "0.0.1"
+    "grapick": "0.0.5"
   }
 }

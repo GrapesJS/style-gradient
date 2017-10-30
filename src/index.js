@@ -1,8 +1,10 @@
 import loadComponents from './components';
 import loadBlocks from './blocks';
-import grapesjs from 'grapesjs';
+//import grapick from 'grapick';
+import gjs from 'grapesjs';
+const g = grapesjs || gjs;
 
-export default grapesjs.plugins.add('gjs-style-gradient', (editor, opts = {}) => {
+export default g.plugins.add('gjs-style-gradient', (editor, opts = {}) => {
   let config = opts;
 
   let defaults = {
@@ -22,5 +24,6 @@ export default grapesjs.plugins.add('gjs-style-gradient', (editor, opts = {}) =>
   loadBlocks(editor, config);
 
   // REMOVE THIS
-  editor.on('load', () => editor.setComponents('This is a content from the plugin'))
+  editor.on('load', () =>
+    editor.setComponents('<div style="text-align:center">This is a content from the plugin</div>'))
 });

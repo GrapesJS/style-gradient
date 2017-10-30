@@ -3,13 +3,8 @@
   <head>
     <meta charset="utf-8">
     <title>GrapesJS Style Gradient</title>
-  <!--
-    <link rel="stylesheet" href="./node_modules/grapesjs/dist/css/grapes.min.css">
-
-    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
-    <script src="./node_modules/grapesjs/dist/grapes.min.js"></script>
-    <script src="./dist/grapesjs-plugin.min.js"></script>
-  -->
+    <link href="node_modules/grapesjs/dist/css/grapes.min.css" rel="stylesheet">
+    <script src="node_modules/grapesjs/dist/grapes.min.js"></script>
     <style>
       body,
       html {
@@ -21,7 +16,18 @@
   <body>
 
     <div id="gjs" style="height:0px; overflow:hidden"></div>
-      Welcome to the demo
+    <script>
+      // HtmlWebpackPlugin injects the plugin script dynamically so
+      // I have to "wait" before the initialization
+      setTimeout(() => {
+        var editor = grapesjs.init({
+          fromElement: 1,
+          container: '#gjs',
+          height: '100%',
+          storageManager: { type: 0 },
+          plugins: ['gjs-style-gradient']
+        });
+      }, 0)
     </script>
   </body>
 </html>
