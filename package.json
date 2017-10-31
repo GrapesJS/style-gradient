@@ -54,6 +54,6 @@
     "webpack-dev-server": "^2.5.1"
   },
   "dependencies": {
-    "grapick": "0.0.5"
+    "grapick": "^0.1.6"
   }
 }

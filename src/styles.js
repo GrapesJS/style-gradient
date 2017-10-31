@@ -9,7 +9,6 @@ const getColor = color => {
 
 export default (editor, config = {}) => {
   const sm = editor.StyleManager;
-  const typeBase = sm.getType('base');
   let colorPicker = config.colorPicker;
 
   sm.addType('gradient', {
@@ -22,38 +21,16 @@ export default (editor, config = {}) => {
         return ``;
       },
 
-      // Set the value to the input (eg. when the component is changed)
+      // Indicate how to set the value (eg. when the component is changed)
       setValue(value) {
         const gp = this.gp;
         const defValue = this.model.getDefaultValue();
         value = value || defValue;
-        let start = value.indexOf('(') + 1;
-        let end = value.lastIndexOf(')');
-        value = value.substring(start, end);
-        let direction = '45deg';
-        const values = value.split(/,(?![^(]*\)) /);
-        // this generates loop
-        gp.clear();
-
-        if (!value) {
-          return;
-        }
-
-        if (values.length > 2) {
-          direction = values.shift();
-        }
-
-        gp.setDirection(direction);
-        values.forEach(value => {
-          const hdlValues = value.split(' ');
-          const position = parseFloat(hdlValues.pop());
-          const color = hdlValues.join('');
-          gp.addHandler(position, color, 0);
-        })
+        gp && gp.setValue(value, {silent: 1});
       },
 
+
       onRender() {
-        const model = this.model;
         const ppfx = this.ppfx;
         const el = document.createElement('div');
         const colorEl = colorPicker && `<div class="grp-handler-cp-wrap">
@@ -62,6 +39,8 @@ export default (editor, config = {}) => {
             <div class="gjs-field-color-picker" ${cpKey}></div>
           </div>
         </div>`;
+
+        // Setup Grapick
         const gp = new Grapick({ ...{
             colorEl,
             direction: '90deg',
@@ -75,8 +54,7 @@ export default (editor, config = {}) => {
         // Do stuff on gradient change
         gp.on('change', complete => {
           const value = gp.getSafeValue();
-          model.set('value', value, {avoidStore: 1, fromInput: 1});
-          complete && model.trigger('change:value', model, value, {fromInput: 1});
+          this.model.setValue(value, complete, { fromInput: 1 });
         });
 
         // Check for the custom color picker
@@ -85,6 +63,11 @@ export default (editor, config = {}) => {
             const el = handler.getEl().querySelector(`[${cpKey}]`);
             const elStyle = el.style;
             elStyle.backgroundColor = handler.getColor();
+            const updateColor = (color, complete = 1) => {
+              const cl = getColor(color);
+              elStyle.backgroundColor = cl;
+              handler.setColor(cl, complete);
+            };
 
             editor.$(el).spectrum({
               showAlpha: true,
@@ -92,14 +75,10 @@ export default (editor, config = {}) => {
               cancelText: '⨯',
               color: handler.getColor(),
               change(color) {
-                const cl = getColor(color);
-                elStyle.backgroundColor = cl;
-                handler.setColor(cl);
+                updateColor(color);
               },
               move(color) {
-                const cl = getColor(color);
-                elStyle.backgroundColor = cl;
-                handler.setColor(cl, 0);
+                updateColor(color, 0);
               }
             });
           };
