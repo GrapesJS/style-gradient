@@ -21,8 +21,17 @@
     <div id="gjs" style="height:0px; overflow:hidden">
       <div
         data-gjs-stylable='["color", "background-color", "background-image"]'
-        style="padding:25px; text-align: center; background-image: linear-gradient(90deg, rgb(0, 255, 205) 0%, rgb(227, 162, 220) 100%)">
-          Gradient component
+        style="padding:25px;
+          text-align: center;
+          color: white;
+          min-height: 300px;
+          font: caption;
+          background-image: linear-gradient(90deg, rgb(0, 255, 205) 1%, rgb(227, 162, 220) 99%)">
+          <h1 style="font-size: 3rem">Gradient</h1>
+          <div style="font-size: 1.7rem; line-height: 3rem">
+            This is a demo content from _index.html and shouldn't be edited. For the development purpose you can
+            copy the file and rename it to index.html, git will ignore it.
+          </div>
       </div>
     </div>
     <script>
@@ -50,14 +59,6 @@
           type: 'gradient',
           defaults: 'none'
         });
-
-        // Store and load events
-        editor.on('storage:load', function(e) {
-          console.log('LOAD ', e);
-        })
-        editor.on('storage:store', function(e) {
-          console.log('STORE ', e);
-        })
       }, 0)
     </script>
   </body>
