@@ -2,53 +2,102 @@ import Grapick from 'grapick';
 
 const cpKey = 'data-cp';
 
+const getColor = color => {
+  let cl = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
+  return cl.replace(/ /g, '');
+}
+
 export default (editor, config = {}) => {
   const sm = editor.StyleManager;
   const typeBase = sm.getType('base');
 
   sm.addType('gradient', {
     view: {
+
+      // I don't need any event
       events: {},
 
       templateInput(model) {
         return ``;
       },
 
-      //
+      // Set the value to the input (eg. when the component is changed)
       setValue(value) {
-        const val = value || this.model.getDefaultValue();
-        console.log('Gradient value is ', value);
+        const gp = this.gp;
+        const defValue = this.model.getDefaultValue();
+        value = value || defValue;
+        let start = value.indexOf('(') + 1;
+        let end = value.lastIndexOf(')');
+        value = value.substring(start, end);
+        let direction = '45deg';
+        const values = value.split(/,(?![^(]*\)) /);
+        // this generates loop
+        gp.clear();
+
+        if (!value) {
+          return;
+        }
+
+        if (values.length > 2) {
+          direction = values.shift();
+        }
+
+        gp.setDirection(direction);
+        values.forEach(value => {
+          const hdlValues = value.split(' ');
+          const position = parseFloat(hdlValues.pop());
+          const color = hdlValues.join('');
+          gp.addHandler(position, color, 0);
+        })
       },
 
       onRender() {
-        console.log('Gradient rendered');
         const model = this.model;
         const ppfx = this.ppfx;
         const el = document.createElement('div');
-        const gp = new Grapick({el, colorEl: `<input ${cpKey}/>`});
+        const gp = new Grapick({
+          el,
+          colorEl: `
+            <div class="grp-handler-cp-wrap">
+              <div class="gjs-field-colorp-c">
+                <div class="gjs-checker-bg"></div>
+                <div class="gjs-field-color-picker" ${cpKey}></div>
+              </div>
+            </div>
+          `,
+          direction: '45deg',
+        });
         const fields = this.el.querySelector(`.${ppfx}fields`);
         fields.appendChild(el.children[0]);
-        this.input = gp;
+        this.gp = gp;
 
         // Do stuff on gradient change
         gp.on('change', complete => {
           const value = gp.getSafeValue();
-          model.set('value', value, {avoidStore: 1});
-          complete && model.trigger('change:value', model, value, {});
+          model.set('value', value, {avoidStore: 1, fromInput: 1});
+          complete && model.trigger('change:value', model, value, {fromInput: 1});
         });
 
-        // Setup
+        // Setup spectrum color picker
         gp.setColorPicker(handler => {
           const el = handler.getEl().querySelector(`[${cpKey}]`);
+          const elStyle = el.style;
+          elStyle.backgroundColor = handler.getColor();
 
           editor.$(el).spectrum({
             showAlpha: true,
+            chooseText: 'Ok',
+            cancelText: '⨯',
             color: handler.getColor(),
             change(color) {
-              handler.setColor(color.toRgbString());
+              const cl = getColor(color);
+              elStyle.backgroundColor = cl;
+              handler.setColor(cl);
             },
             move(color) {
-              handler.setColor(color.toRgbString(), 0);
+              const cl = getColor(color);
+              elStyle.backgroundColor = cl;
+              handler.setColor(cl, 0);
             }
           });
         });
