@@ -8,7 +8,6 @@ export default g.plugins.add('gjs-style-gradient', (editor, opts = {}) => {
   let config = opts;
 
   let defaults = {
-
     // Grapick options
     grapickOpts: {},
 
@@ -17,15 +16,10 @@ export default g.plugins.add('gjs-style-gradient', (editor, opts = {}) => {
     // You can use 'default' string to get the one used by Grapesjs (which
     // is spectrum at the moment of writing)
     colorPicker: '',
-
-    // default options
   };
 
   // Load defaults
-  for (let name in defaults) {
-    if (!(name in config))
-      config[name] = defaults[name];
-  }
+  config = { ...defaults, ...config };
 
   // Add components
   loadComponents(editor, config);

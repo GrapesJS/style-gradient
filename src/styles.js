@@ -62,10 +62,11 @@ export default (editor, config = {}) => {
             <div class="gjs-field-color-picker" ${cpKey}></div>
           </div>
         </div>`;
-        const gp = new Grapick({
-          el,
-          colorEl,
-          direction: '45deg',
+        const gp = new Grapick({ ...{
+            colorEl,
+            direction: '90deg',
+          },
+          ...config.grapickOpts, el
         });
         const fields = this.el.querySelector(`.${ppfx}fields`);
         fields.appendChild(el.children[0]);
@@ -78,7 +79,7 @@ export default (editor, config = {}) => {
           complete && model.trigger('change:value', model, value, {fromInput: 1});
         });
 
-        // Check for a custom color picker
+        // Check for the custom color picker
         if (colorPicker == 'default') {
           colorPicker = handler => {
             const el = handler.getEl().querySelector(`[${cpKey}]`);
