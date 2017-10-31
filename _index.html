@@ -32,7 +32,12 @@
           container: '#gjs',
           height: '100%',
           storageManager: { type: 0 },
-          plugins: ['gjs-style-gradient']
+          plugins: ['gjs-style-gradient'],
+          pluginsOpts: {
+            'gjs-style-gradient': {
+              colorPicker: 'default',
+            }
+          }
         });
 
         editor.StyleManager.addProperty('Decorations', {

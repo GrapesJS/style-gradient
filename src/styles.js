@@ -10,6 +10,7 @@ const getColor = color => {
 export default (editor, config = {}) => {
   const sm = editor.StyleManager;
   const typeBase = sm.getType('base');
+  let colorPicker = config.colorPicker;
 
   sm.addType('gradient', {
     view: {
@@ -55,16 +56,15 @@ export default (editor, config = {}) => {
         const model = this.model;
         const ppfx = this.ppfx;
         const el = document.createElement('div');
+        const colorEl = colorPicker && `<div class="grp-handler-cp-wrap">
+          <div class="gjs-field-colorp-c">
+            <div class="gjs-checker-bg"></div>
+            <div class="gjs-field-color-picker" ${cpKey}></div>
+          </div>
+        </div>`;
         const gp = new Grapick({
           el,
-          colorEl: `
-            <div class="grp-handler-cp-wrap">
-              <div class="gjs-field-colorp-c">
-                <div class="gjs-checker-bg"></div>
-                <div class="gjs-field-color-picker" ${cpKey}></div>
-              </div>
-            </div>
-          `,
+          colorEl,
           direction: '45deg',
         });
         const fields = this.el.querySelector(`.${ppfx}fields`);
@@ -78,29 +78,33 @@ export default (editor, config = {}) => {
           complete && model.trigger('change:value', model, value, {fromInput: 1});
         });
 
-        // Setup spectrum color picker
-        gp.setColorPicker(handler => {
-          const el = handler.getEl().querySelector(`[${cpKey}]`);
-          const elStyle = el.style;
-          elStyle.backgroundColor = handler.getColor();
+        // Check for a custom color picker
+        if (colorPicker == 'default') {
+          colorPicker = handler => {
+            const el = handler.getEl().querySelector(`[${cpKey}]`);
+            const elStyle = el.style;
+            elStyle.backgroundColor = handler.getColor();
 
-          editor.$(el).spectrum({
-            showAlpha: true,
-            chooseText: 'Ok',
-            cancelText: '⨯',
-            color: handler.getColor(),
-            change(color) {
-              const cl = getColor(color);
-              elStyle.backgroundColor = cl;
-              handler.setColor(cl);
-            },
-            move(color) {
-              const cl = getColor(color);
-              elStyle.backgroundColor = cl;
-              handler.setColor(cl, 0);
-            }
-          });
-        });
+            editor.$(el).spectrum({
+              showAlpha: true,
+              chooseText: 'Ok',
+              cancelText: '⨯',
+              color: handler.getColor(),
+              change(color) {
+                const cl = getColor(color);
+                elStyle.backgroundColor = cl;
+                handler.setColor(cl);
+              },
+              move(color) {
+                const cl = getColor(color);
+                elStyle.backgroundColor = cl;
+                handler.setColor(cl, 0);
+              }
+            });
+          };
+        }
+
+        colorPicker && gp.setColorPicker(colorPicker);
       },
     }
   })
