@@ -10,8 +10,9 @@ if (process.env.WEBPACK_ENV !== 'dev') {
   plugins.push(new webpack.BannerPlugin(name + ' - ' + pkg.version));
 } else {
   var index = 'index.html';
+  var indexDev = '_' + index;
   plugins.push(new HtmlWebpackPlugin({
-    template: fs.existsSync(index) ? index : '_' + index
+    template: fs.existsSync(indexDev) ? indexDev : index
   }));
 }
 

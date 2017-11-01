@@ -3,4 +3,4 @@ private/
 node_modules/
 .eslintrc
 *.log
-index.html
+_index.html
