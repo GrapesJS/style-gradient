@@ -14,6 +14,14 @@ export default g.plugins.add('gjs-style-gradient', (editor, opts = {}) => {
     // You can use 'default' string to get the one used by Grapesjs (which
     // is spectrum at the moment of writing)
     colorPicker: '',
+
+    // Show gradient direction input under picker, you can pass an object
+    // as a model
+    inputDirection: 1,
+
+    // Show gradient type input under picker, you can pass an object as
+    // a model
+    inputType: 1,
   };
 
   // Load defaults

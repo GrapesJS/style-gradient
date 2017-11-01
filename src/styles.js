@@ -34,9 +34,9 @@ export default (editor, config = {}) => {
         const ppfx = this.ppfx;
         const el = document.createElement('div');
         const colorEl = colorPicker && `<div class="grp-handler-cp-wrap">
-          <div class="gjs-field-colorp-c">
-            <div class="gjs-checker-bg"></div>
-            <div class="gjs-field-color-picker" ${cpKey}></div>
+          <div class="${ppfx}field-colorp-c">
+            <div class="${ppfx}checker-bg"></div>
+            <div class="${ppfx}field-color-picker" ${cpKey}></div>
           </div>
         </div>`;
 
@@ -56,6 +56,40 @@ export default (editor, config = {}) => {
           const value = gp.getSafeValue();
           this.model.setValue(value, complete, { fromInput: 1 });
         });
+
+        // Add custom inputs
+        [
+          ['inputDirection', 'select', 'setDirection', {
+            options: [
+              {value: 'top'},
+              {value: 'right'},
+              {value: 'center'},
+              {value: 'bottom'},
+              {value: 'left'},
+            ]
+          }], ['inputType', 'select', 'setType', {
+            options: [
+              {value: 'radial'},
+              {value: 'linear'},
+              {value: 'repeating-radial'},
+              {value: 'repeating-linear'},
+            ]
+          }]
+        ].forEach(input => {
+            const inputConfig = config[input[0]];
+            if (inputConfig) {
+              const type = input[1];
+              const inputObj = typeof inputConfig == 'object' ? inputConfig : {};
+              const propInput = sm.createType(inputObj.type || type, {
+                model: { ...input[3], ...inputObj }
+              });
+              propInput.render();
+              propInput.model.on('change:value', (model, value) => {
+                gp[input[2]](model.getFullValue());
+              })
+              fields.appendChild(propInput.el);
+            }
+        })
 
         // Check for the custom color picker
         if (colorPicker == 'default') {
