@@ -1,6 +1,7 @@
 import Grapick from 'grapick';
 
 const cpKey = 'data-cp';
+let inputDirection, inputType;
 
 const getColor = color => {
   let cl = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
@@ -27,6 +28,8 @@ export default (editor, config = {}) => {
         const defValue = this.model.getDefaultValue();
         value = value || defValue;
         gp && gp.setValue(value, {silent: 1});
+        inputType && inputType.setValue(gp.getType());
+        inputDirection && inputDirection.setValue(gp.getDirection());
       },
 
 
@@ -60,6 +63,7 @@ export default (editor, config = {}) => {
         // Add custom inputs
         [
           ['inputDirection', 'select', 'setDirection', {
+            name: 'Direction',
             options: [
               {value: 'top'},
               {value: 'right'},
@@ -68,6 +72,7 @@ export default (editor, config = {}) => {
               {value: 'left'},
             ]
           }], ['inputType', 'select', 'setType', {
+            name: 'Type',
             options: [
               {value: 'radial'},
               {value: 'linear'},
@@ -76,6 +81,7 @@ export default (editor, config = {}) => {
             ]
           }]
         ].forEach(input => {
+            const inputName = input[0];
             const inputConfig = config[input[0]];
             if (inputConfig) {
               const type = input[1];
@@ -88,6 +94,8 @@ export default (editor, config = {}) => {
                 gp[input[2]](model.getFullValue());
               })
               fields.appendChild(propInput.el);
+              inputName == 'inputDirection' && (inputDirection = propInput);
+              inputName == 'inputType' && (inputType = propInput);
             }
         })
 
