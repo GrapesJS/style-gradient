@@ -29,7 +29,6 @@ export default (editor, config = {}) => {
         value = value || defValue;
         gp && gp.setValue(value, {silent: 1});
         inputType && inputType.setValue(gp.getType());
-        console.log('set direction', gp.getDirection());
         inputDirection && inputDirection.setValue(gp.getDirection());
       },
 
@@ -49,6 +48,7 @@ export default (editor, config = {}) => {
           ...config.grapickOpts, el
         });
         const fields = this.el.querySelector(`.${ppfx}fields`);
+        fields.style.flexWrap = 'wrap';
         fields.appendChild(el.children[0]);
         this.gp = gp;
 

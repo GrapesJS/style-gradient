@@ -3,8 +3,6 @@ import gjs from 'grapesjs';
 const g = grapesjs || gjs;
 
 export default g.plugins.add('gjs-style-gradient', (editor, opts = {}) => {
-  let config = opts;
-
   let defaults = {
     // Grapick options
     grapickOpts: {},
@@ -25,7 +23,7 @@ export default g.plugins.add('gjs-style-gradient', (editor, opts = {}) => {
   };
 
   // Load defaults
-  config = { ...defaults, ...config };
+  const config = { ...defaults, ...opts };
 
   // Add styles
   loadStyles(editor, config);
