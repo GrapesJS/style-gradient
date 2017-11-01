@@ -29,6 +29,7 @@ export default (editor, config = {}) => {
         value = value || defValue;
         gp && gp.setValue(value, {silent: 1});
         inputType && inputType.setValue(gp.getType());
+        console.log('set direction', gp.getDirection());
         inputDirection && inputDirection.setValue(gp.getDirection());
       },
 
@@ -44,10 +45,7 @@ export default (editor, config = {}) => {
         </div>`;
 
         // Setup Grapick
-        const gp = new Grapick({ ...{
-            colorEl,
-            direction: '90deg',
-          },
+        const gp = new Grapick({ ...{ colorEl },
           ...config.grapickOpts, el
         });
         const fields = this.el.querySelector(`.${ppfx}fields`);
