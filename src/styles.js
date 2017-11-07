@@ -18,21 +18,31 @@ export default (editor, config = {}) => {
       // I don't need any event
       events: {},
 
+
+      // Don't need a template as the input will be created by Grapick
       templateInput(model) {
         return ``;
       },
 
-      // Indicate how to set the value (eg. when the component is changed)
+
+      // With `setValue` I should indicate how to update the custom input,
+      // in our case Grapick instance.
+      // The `value` in this case might be something like:
+      // `linear-gradient(90deg, red 1%, blue 99%)`
       setValue(value) {
         const gp = this.gp;
         const defValue = this.model.getDefaultValue();
         value = value || defValue;
         gp && gp.setValue(value, {silent: 1});
+        // Update also our optional inputs for the type and the
+        // direction of a gradient color
         inputType && inputType.setValue(gp.getType());
         inputDirection && inputDirection.setValue(gp.getDirection());
       },
 
 
+      // Here all I need is to setup the Grapick input and append it somewhere
+      // on the property
       onRender() {
         const ppfx = this.ppfx;
         const el = document.createElement('div');
@@ -55,10 +65,13 @@ export default (editor, config = {}) => {
         // Do stuff on gradient change
         gp.on('change', complete => {
           const value = gp.getSafeValue();
-          this.model.setValue(value, complete, { fromInput: 1 });
+          // Use should use `model.setValue` when you expect to reflect changes
+          // on the input, `model.setValueFromInput` is to used when the change comes
+          // from the input itself, like in this case
+          this.model.setValueFromInput(value, complete);
         });
 
-        // Add custom inputs
+        // Add custom inputs, if requested
         [
           ['inputDirection', 'select', 'setDirection', {
             name: 'Direction',
@@ -97,7 +110,7 @@ export default (editor, config = {}) => {
             }
         })
 
-        // Check for the custom color picker
+        // Add the custom color picker, if requested
         if (colorPicker == 'default') {
           colorPicker = handler => {
             const el = handler.getEl().querySelector(`[${cpKey}]`);
