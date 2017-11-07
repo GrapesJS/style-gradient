@@ -1,28 +1,13 @@
 # GrapesJS Style Gradient
 
-
-<span><a href="https://david-dm.org/artf/grapesjs-plugin-boilerplate#info=devDependencies" title="View the status of this project's development dependencies on DavidDM"><img src="https://img.shields.io/david/dev/artf/grapesjs-plugin-boilerplate.svg" alt="Dev Dependency Status" /></a></span>
-
-This boilerplate helps you quickly start a production ready plugin for GrapesJS. If you don't know from where to start, check this guide [Creating plugins](https://github.com/artf/grapesjs/wiki/Creating-plugins). Sections below are also used as boilerplate for your README, follow steps
-
-### Usage
-1. Update `package.json`
-1. Install dependencies `npm i` and run the local server `npm start`
-1. Start creating your plugin from `src/index.js`
-1. Show some gif/demo if possible
-1. Update README
-1. When you're ready update the production file `npm run build`
-1. Publish
-
+This plugins adds a new `gradient` property to the GrapesJS's StyleManager by using [Grapick](https://github.com/artf/grapick)
 
 
 
 ## Summary
 
 * Plugin name: `grapesjs-style-gradient`
-* Components: `new-component1`, `new-component2`, ...
-* Blocks: `new-block1`, `new-block1`, ...
-...
+* Style properties: `gradient`
 
 
 
@@ -30,7 +15,14 @@ This boilerplate helps you quickly start a production ready plugin for GrapesJS.
 
 ## Options
 
-* `option1` Description option, default: `default value`
+* `grapickOpts` - Grapick option, default: `{}`
+* `colorPicker` - Custom color picker, check Grapick's repo to get more about it
+  If you leave it empty the native color picker will be used. You can use 'default'
+  string to get the one used by GrapesJS (which is spectrum at the moment of writing)
+* `inputDirection` - Add the gradient direction input under the picker
+  (you can pass an object as a Property Model), default: 1
+* `inputType` - Add the gradient type input under the picker
+  (you can pass an object as a Property Model), default: 1
 
 
 
