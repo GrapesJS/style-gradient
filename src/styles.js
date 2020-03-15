@@ -43,6 +43,10 @@ export default (editor, config = {}) => {
       // on the property
       onRender() {
         const { ppfx, em, model } = this;
+        const conf = {
+          ...config,
+          ...(model.get('gradientConfig') || {}),
+        };
         const el = document.createElement('div');
         const colorEl = colorPicker && `<div class="grp-handler-cp-wrap">
           <div class="${ppfx}field-colorp-c">
@@ -55,7 +59,7 @@ export default (editor, config = {}) => {
         const gp = new Grapick({
           el,
           colorEl,
-          ...config.grapickOpts,
+          ...conf.grapickOpts,
         });
         const fields = this.el.querySelector(`.${ppfx}fields`);
         fields.style.flexWrap = 'wrap';
@@ -76,9 +80,11 @@ export default (editor, config = {}) => {
           ['inputDirection', 'integer', 'setDirection', {
             name: 'Direction',
             units: ['deg'],
+            defaults: 90,
             fixedValues: ['top', 'right', 'bottom', 'left'],
           }], ['inputType', 'select', 'setType', {
             name: 'Type',
+            defaults: 'linear',
             options: [
               {value: 'radial'},
               {value: 'linear'},
@@ -88,13 +94,13 @@ export default (editor, config = {}) => {
           }]
         ].forEach(input => {
             const inputName = input[0];
-            const inputConfig = config[input[0]];
+            const inputConfig = conf[input[0]];
             if (inputConfig) {
               const { parent } = model;
               const type = input[1];
               const inputObj = typeof inputConfig == 'object' ? inputConfig : {};
               const propInput = sm.createType(inputObj.type || type, {
-                model: { ...input[3], ...inputObj }
+                model: { ...input[3], ...inputObj },
               });
               parent && (propInput.model.parent = parent);
               propInput.render();
