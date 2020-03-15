@@ -18,6 +18,9 @@ export default (editor, opts = {}) => {
     // Show gradient type input under picker, you can pass an object as
     // a model
     inputType: 1,
+
+    // Do something when inputDirection/inputType triggers a change
+    onCustomInputChange: () => 0,
   };
 
   // Load defaults

@@ -47,6 +47,7 @@ export default (editor, config = {}) => {
           ...config,
           ...(model.get('gradientConfig') || {}),
         };
+        const { onCustomInputChange } = conf;
         const el = document.createElement('div');
         const colorEl = colorPicker && `<div class="grp-handler-cp-wrap">
           <div class="${ppfx}field-colorp-c">
@@ -107,7 +108,8 @@ export default (editor, config = {}) => {
               propInput.render();
               propInput.model.on('change:value', (model) => {
                 gp[input[2]](model.getFullValue());
-              })
+                onCustomInputChange({ model, input, inputDirection, inputType });
+              });
               fields.appendChild(propInput.el);
               inputName == 'inputDirection' && (inputDirection = propInput);
               inputName == 'inputType' && (inputType = propInput);
