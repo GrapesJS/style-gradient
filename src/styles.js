@@ -42,7 +42,7 @@ export default (editor, config = {}) => {
       // Here all I need is to setup the Grapick input and append it somewhere
       // on the property
       onRender() {
-        const ppfx = this.ppfx;
+        const { ppfx, em, model } = this;
         const el = document.createElement('div');
         const colorEl = colorPicker && `<div class="grp-handler-cp-wrap">
           <div class="${ppfx}field-colorp-c">
@@ -65,10 +65,10 @@ export default (editor, config = {}) => {
         // Do stuff on gradient change
         gp.on('change', complete => {
           const value = gp.getSafeValue();
-          // Use should use `model.setValue` when you expect to reflect changes
+          // You should use `model.setValue` when you expect to reflect changes
           // on the input, `model.setValueFromInput` is to used when the change comes
           // from the input itself, like in this case
-          this.model.setValueFromInput(value, complete);
+          model.setValueFromInput(value, complete);
         });
 
         // Add custom inputs, if requested
@@ -89,13 +89,15 @@ export default (editor, config = {}) => {
             const inputName = input[0];
             const inputConfig = config[input[0]];
             if (inputConfig) {
+              const { parent } = model;
               const type = input[1];
               const inputObj = typeof inputConfig == 'object' ? inputConfig : {};
               const propInput = sm.createType(inputObj.type || type, {
                 model: { ...input[3], ...inputObj }
               });
+              parent && (propInput.model.parent = parent);
               propInput.render();
-              propInput.model.on('change:value', (model, value) => {
+              propInput.model.on('change:value', (model) => {
                 gp[input[2]](model.getFullValue());
               })
               fields.appendChild(propInput.el);
@@ -110,6 +112,9 @@ export default (editor, config = {}) => {
             const el = handler.getEl().querySelector(`[${cpKey}]`);
             const elStyle = el.style;
             elStyle.backgroundColor = handler.getColor();
+            const emConf = em && em.getConfig() || {};
+            const colorPickerConfig = emConf.colorPicker || {};
+            const elToAppend = emConf.el;
             const updateColor = (color, complete = 1) => {
               const cl = getColor(color);
               elStyle.backgroundColor = cl;
@@ -117,6 +122,11 @@ export default (editor, config = {}) => {
             };
 
             editor.$(el).spectrum({
+              containerClassName: `${ppfx}one-bg ${ppfx}two-color`,
+              appendTo: elToAppend || 'body',
+              maxSelectionSize: 8,
+              showPalette: true,
+              palette: [],
               showAlpha: true,
               chooseText: 'Ok',
               cancelText: '⨯',
@@ -126,7 +136,8 @@ export default (editor, config = {}) => {
               },
               move(color) {
                 updateColor(color, 0);
-              }
+              },
+              ...colorPickerConfig,
             });
           };
         }
