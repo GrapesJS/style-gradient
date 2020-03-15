@@ -20,9 +20,7 @@ export default (editor, config = {}) => {
 
 
       // Don't need a template as the input will be created by Grapick
-      templateInput() {
-        return '';
-      },
+      templateInput: () => '',
 
 
       // With `setValue` I should indicate how to update the custom input,
@@ -54,8 +52,10 @@ export default (editor, config = {}) => {
         </div>`;
 
         // Setup Grapick
-        const gp = new Grapick({ ...{ colorEl },
-          ...config.grapickOpts, el
+        const gp = new Grapick({
+          el,
+          colorEl,
+          ...config.grapickOpts,
         });
         const fields = this.el.querySelector(`.${ppfx}fields`);
         fields.style.flexWrap = 'wrap';
@@ -73,15 +73,9 @@ export default (editor, config = {}) => {
 
         // Add custom inputs, if requested
         [
-          ['inputDirection', 'select', 'setDirection', {
+          ['inputDirection', 'integer', 'setDirection', {
             name: 'Direction',
-            options: [
-              {value: 'top'},
-              {value: 'right'},
-              {value: 'center'},
-              {value: 'bottom'},
-              {value: 'left'},
-            ]
+            units: ['deg'],
           }], ['inputType', 'select', 'setType', {
             name: 'Type',
             options: [
