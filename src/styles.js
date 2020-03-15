@@ -101,6 +101,7 @@ export default (editor, config = {}) => {
               const inputObj = typeof inputConfig == 'object' ? inputConfig : {};
               const propInput = sm.createType(inputObj.type || type, {
                 model: { ...input[3], ...inputObj },
+                view: { propTarget: this.propTarget },
               });
               parent && (propInput.model.parent = parent);
               propInput.render();
