@@ -76,6 +76,7 @@ export default (editor, config = {}) => {
           ['inputDirection', 'integer', 'setDirection', {
             name: 'Direction',
             units: ['deg'],
+            fixedValues: ['top', 'right', 'bottom', 'left'],
           }], ['inputType', 'select', 'setType', {
             name: 'Type',
             options: [
