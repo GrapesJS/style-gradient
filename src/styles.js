@@ -20,8 +20,8 @@ export default (editor, config = {}) => {
 
 
       // Don't need a template as the input will be created by Grapick
-      templateInput(model) {
-        return ``;
+      templateInput() {
+        return '';
       },
 
 
