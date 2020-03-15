@@ -130,8 +130,17 @@ export default (editor, config = {}) => {
               elStyle.backgroundColor = cl;
               handler.setColor(cl, complete);
             };
-
-            editor.$(el).spectrum({
+            const cpOpts = {
+              color: handler.getColor(),
+              change(color) {
+                updateColor(color);
+              },
+              move(color) {
+                updateColor(color, 0);
+              },
+            }
+            const baseCp = em && em.initBaseColorPicker;
+            baseCp ? baseCp(el, cpOpts) : editor.$(el).spectrum({
               containerClassName: `${ppfx}one-bg ${ppfx}two-color`,
               appendTo: elToAppend || 'body',
               maxSelectionSize: 8,
@@ -140,13 +149,7 @@ export default (editor, config = {}) => {
               showAlpha: true,
               chooseText: 'Ok',
               cancelText: '⨯',
-              color: handler.getColor(),
-              change(color) {
-                updateColor(color);
-              },
-              move(color) {
-                updateColor(color, 0);
-              },
+              ...cpOpts,
               ...colorPickerConfig,
             });
           };
