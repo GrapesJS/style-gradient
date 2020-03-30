@@ -1,6 +1,6 @@
 {
   "name": "grapesjs-style-gradient",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Add gradient input to the Style Manager in GrapesJS",
   "main": "dist/grapesjs-style-gradient.min.js",
   "repository": {
