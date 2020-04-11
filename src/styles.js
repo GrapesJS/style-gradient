@@ -11,6 +11,12 @@ const getColor = color => {
 export default (editor, config = {}) => {
   const sm = editor.StyleManager;
   let colorPicker = config.colorPicker;
+  let lastOpts = {};
+
+  const updateLastOpts = opts => {
+    lastOpts = opts || { fromTarget: 1, avoidStore: 1 };
+    setTimeout(() => lastOpts = {});
+  }
 
   sm.addType('gradient', {
     view: {
@@ -31,7 +37,8 @@ export default (editor, config = {}) => {
         const gp = this.gp;
         const defValue = this.model.getDefaultValue();
         value = value || defValue;
-        gp && gp.setValue(value, {silent: 1});
+        updateLastOpts();
+        gp && gp.setValue(value);
         // Update also our optional inputs for the type and the
         // direction of a gradient color
         inputType && inputType.setValue(gp.getType());
@@ -73,7 +80,7 @@ export default (editor, config = {}) => {
           // You should use `model.setValue` when you expect to reflect changes
           // on the input, `model.setValueFromInput` is to used when the change comes
           // from the input itself, like in this case
-          model.setValueFromInput(value, complete);
+          model.setValueFromInput(value, complete, lastOpts);
         });
 
         // Add custom inputs, if requested
@@ -106,9 +113,10 @@ export default (editor, config = {}) => {
               });
               parent && (propInput.model.parent = parent);
               propInput.render();
-              propInput.model.on('change:value', (model) => {
+              propInput.model.on('change:value', (model, val, opts = {}) => {
+                updateLastOpts(opts);
                 gp[input[2]](model.getFullValue());
-                onCustomInputChange({ model, input, inputDirection, inputType });
+                onCustomInputChange({ model, input, inputDirection, inputType, opts });
               });
               fields.appendChild(propInput.el);
               inputName == 'inputDirection' && (inputDirection = propInput);
@@ -153,6 +161,12 @@ export default (editor, config = {}) => {
               ...colorPickerConfig,
             });
           };
+
+          gp.on('handler:remove', handler => {
+            const el = handler.getEl().querySelector(`[${cpKey}]`);
+            const $el = editor.$(el);
+            $el.spectrum && $el.spectrum('destroy');
+          })
         }
 
         colorPicker && gp.setColorPicker(colorPicker);
