@@ -10,9 +10,10 @@ const getColor = color => {
 
 export default (editor, config = {}) => {
   const sm = editor.StyleManager;
+  const { selectEdgeStops } = config;
   let colorPicker = config.colorPicker;
   let lastOpts = {};
-
+  const defDir = [ 'top', 'right', 'bottom', 'left' ];
   const updateLastOpts = opts => {
     lastOpts = opts || { fromTarget: 1, avoidStore: 1 };
     setTimeout(() => lastOpts = {});
@@ -22,7 +23,9 @@ export default (editor, config = {}) => {
     view: {
 
       // I don't need any event
-      events: {},
+      events: {
+        'click [data-clear-style]': 'clear',
+      },
 
 
       // Don't need a template as the input will be created by Grapick
@@ -34,15 +37,27 @@ export default (editor, config = {}) => {
       // The `value` in this case might be something like:
       // `linear-gradient(90deg, red 1%, blue 99%)`
       setValue(value) {
-        const gp = this.gp;
+        const { gp } = this;
+        if (!gp) return;
         const defValue = this.model.getDefaultValue();
         value = value || defValue;
         updateLastOpts();
-        gp && gp.setValue(value);
+        gp.setValue(value);
         // Update also our optional inputs for the type and the
         // direction of a gradient color
+        const dir = gp.getDirection();
+        const valueDir = defDir.filter(i => dir.indexOf(i) >= 0)[0] || dir;
         inputType && inputType.setValue(gp.getType());
-        inputDirection && inputDirection.setValue(gp.getDirection());
+        inputDirection && inputDirection.setValue(valueDir);
+        const handlers = gp.getHandlers();
+        selectEdgeStops &&
+          [handlers[0], handlers[handlers.length - 1]].filter(i => i)
+            .map(h => h.select({ keepSelect: 1 }));
+      },
+
+      destroy() {
+        const { gp } = this;
+        gp && gp.destroy();
       },
 
 
@@ -76,23 +91,24 @@ export default (editor, config = {}) => {
 
         // Do stuff on gradient change
         gp.on('change', complete => {
-          const value = gp.getSafeValue();
           // You should use `model.setValue` when you expect to reflect changes
           // on the input, `model.setValueFromInput` is to used when the change comes
           // from the input itself, like in this case
-          model.setValueFromInput(value, complete, lastOpts);
+          model.setValueFromInput(gp.getValue(), complete, lastOpts);
         });
 
         // Add custom inputs, if requested
         [
-          ['inputDirection', 'integer', 'setDirection', {
+          ['inputDirection', 'select', 'setDirection', {
             name: 'Direction',
-            units: ['deg'],
-            defaults: 90,
-            fixedValues: ['top', 'right', 'bottom', 'left'],
-          }], ['inputType', 'select', 'setType', {
+            property: '__gradient-direction',
+            defaults: 'right',
+            options: defDir.map(value => ({ value }))
+          }],
+          ['inputType', 'select', 'setType', {
             name: 'Type',
             defaults: 'linear',
+            property: '__gradient-type',
             options: [
               {value: 'radial'},
               {value: 'linear'},
@@ -102,7 +118,7 @@ export default (editor, config = {}) => {
           }]
         ].forEach(input => {
             const inputName = input[0];
-            const inputConfig = conf[input[0]];
+            const inputConfig = conf[inputName];
             if (inputConfig) {
               const { parent } = model;
               const type = input[1];
@@ -115,7 +131,7 @@ export default (editor, config = {}) => {
               propInput.render();
               propInput.model.on('change:value', (model, val, opts = {}) => {
                 updateLastOpts(opts);
-                gp[input[2]](model.getFullValue());
+                gp[input[2]](model.getFullValue() || model.getDefaultValue(), { complete: !opts.avoidStore });
                 onCustomInputChange({ model, input, inputDirection, inputType, opts });
               });
               fields.appendChild(propInput.el);

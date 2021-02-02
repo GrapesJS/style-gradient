@@ -23,6 +23,6 @@
     "grapesjs-cli": "^1.0.14"
   },
   "dependencies": {
-    "grapick": "^0.1.11"
+    "grapick": "^0.1.13"
   }
 }

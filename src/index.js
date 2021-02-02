@@ -19,6 +19,9 @@ export default (editor, opts = {}) => {
     // a model
     inputType: 1,
 
+    // Select, by default, the edge color stops of the gradient picker
+    selectEdgeStops: 1,
+
     // Do something when inputDirection/inputType triggers a change
     onCustomInputChange: () => 0,
   };
