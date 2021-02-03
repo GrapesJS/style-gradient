@@ -47,6 +47,7 @@ export default (editor, config = {}) => {
         // direction of a gradient color
         const dir = gp.getDirection();
         const valueDir = defDir.filter(i => dir.indexOf(i) >= 0)[0] || dir;
+        gp.setDirection(valueDir); // Ensure the new value
         inputType && inputType.setValue(gp.getType());
         inputDirection && inputDirection.setValue(valueDir);
         const handlers = gp.getHandlers();
@@ -131,7 +132,7 @@ export default (editor, config = {}) => {
               propInput.render();
               propInput.model.on('change:value', (model, val, opts = {}) => {
                 updateLastOpts(opts);
-                gp[input[2]](model.getFullValue() || model.getDefaultValue(), { complete: !opts.avoidStore });
+                gp.el && gp[input[2]](model.getFullValue() || model.getDefaultValue(), { complete: !opts.avoidStore });
                 onCustomInputChange({ model, input, inputDirection, inputType, opts });
               });
               fields.appendChild(propInput.el);
