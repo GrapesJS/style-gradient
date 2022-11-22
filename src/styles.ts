@@ -12,7 +12,6 @@ const getColor = (color: any) => {
 
 export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
   const { StyleManager } = editor;
-  const { selectEdgeStops } = config;
   let colorPicker = config.colorPicker;
   let lastOpts = {};
   const defDir = [ 'top', 'right', 'bottom', 'left' ];
@@ -45,6 +44,12 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
       const { gp } = this;
       if (gp.getValue() === value) return;
       gp.setValue(value, { silent: true });
+
+      if (config.selectEdgeStops) {
+        const handlers = gp.getHandlers();
+          [handlers[0], handlers[handlers.length - 1]].filter(Boolean)
+            .map(h => h.select({ keepSelect: true }));
+      }
     },
     destroy() {
       this.gp?.destroy();
