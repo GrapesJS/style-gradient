@@ -1,23 +1,57 @@
+import type grapesjs from 'grapesjs';
 import Grapick from 'grapick';
+import { PluginOptions } from '.';
 
 const cpKey = 'data-cp';
 let inputDirection, inputType;
 
-const getColor = color => {
+const getColor = (color: any) => {
   let cl = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
   return cl.replace(/ /g, '');
 }
 
-export default (editor, config = {}) => {
-  const sm = editor.StyleManager;
+export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
+  const { StyleManager } = editor;
   const { selectEdgeStops } = config;
   let colorPicker = config.colorPicker;
   let lastOpts = {};
   const defDir = [ 'top', 'right', 'bottom', 'left' ];
-  const updateLastOpts = opts => {
+  const updateLastOpts = (opts: any) => {
     lastOpts = opts || { fromTarget: 1, avoidStore: 1 };
     setTimeout(() => lastOpts = {});
   }
+
+  StyleManager.addType('gradient', { // TODO change to 'gradient-picker'
+    create({ change }: any) {
+      const el = document.createElement('div');
+      el.className = 'gp-container';
+      el.style.width = '100%';
+      const gp = new Grapick({
+        el,
+        // colorEl,
+        ...config.grapickOpts,
+      });
+      gp.on('change', (complete: boolean) => {
+        change({ value: gp.getValue(), partial: !complete });
+      });
+      this.gp = gp;
+
+      return el;
+    },
+    emit({ updateStyle }: any, { partial, value }: any) {
+      updateStyle(value, { partial });
+    },
+    update({ value }: any) {
+      const { gp } = this;
+      if (gp.getValue() === value) return;
+      gp.setValue(value, { silent: true });
+    },
+    destroy() {
+      this.gp?.destroy();
+    },
+  });
+
+  /*
 
   sm.addType('gradient', {
     view: {
@@ -190,4 +224,6 @@ export default (editor, config = {}) => {
       },
     }
   })
+
+  */
 }
