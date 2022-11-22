@@ -11,29 +11,62 @@ const getColor = (color: any) => {
 }
 
 export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
+  // @ts-ignore
+  const em = editor.getModel();
   const { StyleManager } = editor;
-  let colorPicker = config.colorPicker;
+  let { colorPicker } = config;
   let lastOpts = {};
+  const defaultCpAttr = '[data-toggle="handler-color-wrap"]';
   const defDir = [ 'top', 'right', 'bottom', 'left' ];
   const updateLastOpts = (opts: any) => {
     lastOpts = opts || { fromTarget: 1, avoidStore: 1 };
     setTimeout(() => lastOpts = {});
-  }
+  };
+  const clearHandler = (handler: any) => {
+    const el = handler.getEl().querySelector(defaultCpAttr);
+    // @ts-ignore
+    const $el = editor.$(el);
+    $el.spectrum && $el.spectrum('destroy');
+  };
 
   StyleManager.addType('gradient', { // TODO change to 'gradient-picker'
     create({ change }: any) {
       const el = document.createElement('div');
       el.className = 'gp-container';
       el.style.width = '100%';
-      const gp = new Grapick({
-        el,
-        // colorEl,
-        ...config.grapickOpts,
-      });
-      gp.on('change', (complete: boolean) => {
-        change({ value: gp.getValue(), partial: !complete });
-      });
+      const gp = new Grapick({ el, ...config.grapickOpts });
+      gp.on('change', (complete: boolean) => change({ value: gp.getValue(), partial: !complete }));
       this.gp = gp;
+
+      // Add the custom color picker, if requested
+      if (colorPicker === 'default') {
+        colorPicker = handler => {
+          const handlerEl = handler.getEl();
+          const el = handlerEl.querySelector(defaultCpAttr);
+          const handlerInput = handlerEl.querySelector('input');
+          handlerInput?.parentNode.removeChild(handlerInput)
+          const elStyle = el.style;
+          elStyle.backgroundColor = handler.getColor();
+          const updateColor = (color: any, complete = 1) => {
+            const cl = getColor(color);
+            elStyle.backgroundColor = cl;
+            handler.setColor(cl, complete);
+          };
+          em.initBaseColorPicker(el, {
+            color: handler.getColor(),
+            change(color: any) {
+              updateColor(color);
+            },
+            move(color: any) {
+              updateColor(color, 0);
+            },
+          });
+        };
+
+        gp.on('handler:remove', clearHandler);
+      }
+
+      colorPicker && gp.setColorPicker(colorPicker);
 
       return el;
     },
@@ -43,10 +76,11 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
     update({ value }: any) {
       const { gp } = this;
       if (gp.getValue() === value) return;
+      const handlers = gp.getHandlers();
+      handlers.map(clearHandler);
       gp.setValue(value, { silent: true });
 
       if (config.selectEdgeStops) {
-        const handlers = gp.getHandlers();
           [handlers[0], handlers[handlers.length - 1]].filter(Boolean)
             .map(h => h.select({ keepSelect: true }));
       }

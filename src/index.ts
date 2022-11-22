@@ -15,7 +15,7 @@ export type PluginOptions = {
    * You can use 'default' string to get the one used
    * by Grapesjs (which is spectrum at the moment of writing).
    */
-  colorPicker?: '', // TODO
+  colorPicker?: 'default' | ((handler: any) => void),
 
   /**
    * Show gradient direction input under picker, you can pass an object as a model.
@@ -44,7 +44,6 @@ export type PluginOptions = {
 const plugin: grapesjs.Plugin<PluginOptions> =  (editor, opts = {}) => {
   const options: PluginOptions = {
     grapickOpts: {},
-    colorPicker: '',
     inputDirection: true,
     inputType: true,
     selectEdgeStops: true,
