@@ -20,7 +20,8 @@
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "grapesjs-cli": "^1.0.14"
+    "grapesjs": "^0.20.1",
+    "grapesjs-cli": "^3.0.1"
   },
   "dependencies": {
     "grapick": "^0.1.13"
