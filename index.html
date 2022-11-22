@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>GrapesJS Style Gradient</title>
     <link href="https://unpkg.com/grapesjs/dist/css/grapes.min.css" rel="stylesheet">
-    <link href="node_modules/grapick/dist/grapick.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/grapick/dist/grapick.min.css" rel="stylesheet">
     <script src="https://unpkg.com/grapesjs"></script>
     <style>
       body,
@@ -53,12 +53,9 @@
       </div>
     </div>
     <script>
-      var editor;
-
-      // HtmlWebpackPlugin injects the plugin script dynamically so
-      // I have to "wait" before the initialization
       setTimeout(function() {
-        editor = grapesjs.init({
+        console.log('plugin', window['grapesjs-style-gradient'])
+        window.editor = grapesjs.init({
           fromElement: 1,
           container: '#gjs',
           height: '100%',
@@ -75,13 +72,13 @@
           }
         });
 
-        editor.StyleManager.addProperty('Decorations', {
+        window.editor.StyleManager.addProperty('decorations', {
           name: 'Gradient',
           property: 'background-image',
           type: 'gradient',
           defaults: 'none'
         });
-      }, 0)
+      },10)
     </script>
   </body>
 </html>
