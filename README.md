@@ -2,6 +2,8 @@
 
 This plugins adds a new `gradient` property to the GrapesJS's StyleManager by using [Grapick](https://github.com/artf/grapick)
 
+> Requires GrapesJS v0.20.1 or higher
+
 [Demo](https://codepen.io/artf/full/bYwdQG/)
 
 ## Summary
