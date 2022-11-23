@@ -53,7 +53,7 @@ Directly in the browser.
 <div id="gjs"></div>
 
 <script type="text/javascript">
-  var editor = grapesjs.init({
+  const editor = grapesjs.init({
       container : '#gjs',
       // ...
       plugins: ['grapesjs-style-gradient'],
@@ -76,6 +76,23 @@ const editor = grapesjs.init({
   pluginsOpts: {
     [plugin]: { /* options */ }
   }
+});
+
+// Usage via API
+
+// Add gradient picker as a single input
+editor.StyleManager.addProperty('decorations', {
+  type: 'gradient', // <- new type
+  name: 'Gradient',
+  property: 'background-image',
+  defaults: 'none'
+  full: true,
+});
+
+// Add the new background-image bulti-in type
+editor.StyleManager.addProperty('decorations', {
+  extend: 'background-image', // <- extend the built-in type
+  name: 'Gradient Background',
 });
 ```
 
