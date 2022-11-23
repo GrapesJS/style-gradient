@@ -8,7 +8,7 @@ This plugins adds a new `gradient` property to the GrapesJS's StyleManager by us
 
 * Plugin name: `grapesjs-style-gradient`
 * Style type: `gradient` (the gradient picker input)
-* Built-in Style property: `background-image` (composite type with gradient picker direction/type selectors )
+* Built-in Style property: `background-image` (composite type with gradient picker and direction/type selectors )
 
 
 
@@ -22,6 +22,7 @@ This plugins adds a new `gradient` property to the GrapesJS's StyleManager by us
 | `colorPicker` |  Custom color picker, check [Grapick's repo](https://github.com/artf/grapick#add-custom-color-picker) to get more about it. | `undefined` |
 | `selectEdgeStops` | Select, by default, the edge color stops of the gradient picker. | `true` |
 | `styleType` | The id to assign for the gradient picker type. | `'gradient'` |
+| `builtInType` | Built-in property name to use for the composite type with the gradient picker and direction/type selectors. | `'background-image'` |
 
 
 

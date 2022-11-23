@@ -45,7 +45,7 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
   // @ts-ignore
   const em = editor.getModel();
   const { Styles } = editor;
-  let { colorPicker } = config;
+  let { colorPicker, builtInType } = config;
   const styleTypeId = config.styleType!;
   const defaultCpAttr = '[data-toggle="handler-color-wrap"]';
   const defDir = [ 'top', 'right', 'bottom', 'left' ];
@@ -132,7 +132,7 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
     return propGrad.view.gp;
   }
 
-  Styles.addBuiltIn('background-image', {
+  builtInType && Styles.addBuiltIn(builtInType, {
     type: 'composite',
     fromStyle(style: any, { name }: any ) {
       const value = style[name] || '';

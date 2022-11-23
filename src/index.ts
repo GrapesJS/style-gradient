@@ -28,6 +28,13 @@ export type PluginOptions = {
    * @default 'gradient'
    */
   styleType?: string,
+
+  /**
+   * Built-in property name to use for the composite type with the gradient
+   * picker and direction/type selectors.
+   * @default 'background-image'
+   */
+  builtInType?: string | false,
 };
 
 const plugin: grapesjs.Plugin<PluginOptions> =  (editor, opts = {}) => {
@@ -35,6 +42,7 @@ const plugin: grapesjs.Plugin<PluginOptions> =  (editor, opts = {}) => {
     grapickOpts: {},
     selectEdgeStops: true,
     styleType: 'gradient',
+    builtInType: 'background-image',
     ...opts,
   };
   loadStyles(editor, options);
