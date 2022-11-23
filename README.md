@@ -8,7 +8,7 @@ This plugins adds a new `gradient` property to the GrapesJS's StyleManager by us
 
 * Plugin name: `grapesjs-style-gradient`
 * Style type: `gradient` (the gradient picker input)
-* Built-in Style property: `background-image` (composite type with gradient picker and direction/type selectors )
+* Built-in Style property: `background-image` (composite type with gradient picker and direction/type selectors)
 
 
 
