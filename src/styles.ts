@@ -46,6 +46,7 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
   const em = editor.getModel();
   const { Styles } = editor;
   let { colorPicker } = config;
+  const styleTypeId = config.styleType!;
   const defaultCpAttr = '[data-toggle="handler-color-wrap"]';
   const defDir = [ 'top', 'right', 'bottom', 'left' ];
   const defTypes = ['radial', 'linear', 'repeating-radial', 'repeating-linear'];
@@ -61,7 +62,7 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
     return defDir.filter(dir => value.indexOf(dir) > -1)[0];
   }
 
-  Styles.addType('gradient', {
+  Styles.addType(styleTypeId, {
     create({ change }: any) {
       const el = document.createElement('div');
       el.className = 'gp-container';
@@ -152,7 +153,7 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
       {
         name: ' ',
         property: PROP_GRADIENT,
-        type: 'gradient',
+        type: styleTypeId,
         full: true,
         defaults: 'none',
       },

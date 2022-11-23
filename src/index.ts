@@ -22,12 +22,19 @@ export type PluginOptions = {
    * @default true
    */
   selectEdgeStops?: boolean,
+
+  /**
+   * The id to assign for the gradient picker type.
+   * @default 'gradient'
+   */
+  styleType?: string,
 };
 
 const plugin: grapesjs.Plugin<PluginOptions> =  (editor, opts = {}) => {
   const options: PluginOptions = {
     grapickOpts: {},
     selectEdgeStops: true,
+    styleType: 'gradient',
     ...opts,
   };
   loadStyles(editor, options);
