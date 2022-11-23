@@ -15,14 +15,11 @@ This plugins adds a new `gradient` property to the GrapesJS's StyleManager by us
 
 ## Options
 
-* `grapickOpts` - Grapick option, default: `{}`
-* `colorPicker` - Custom color picker, check Grapick's repo to get more about it
-  If you leave it empty the native color picker will be used. You can use 'default'
-  string to get the one used by GrapesJS (which is spectrum at the moment of writing)
-* `inputDirection` - Add the gradient direction input under the picker
-  (you can pass an object as a Property Model), default: 1
-* `inputType` - Add the gradient type input under the picker
-  (you can pass an object as a Property Model), default: 1
+| Option | Description | Default |
+|-|-|-
+| `grapickOpts` | [Grapick options](https://github.com/artf/grapick#configurations). | `{}` |
+| `colorPicker` |  Custom color picker, check [Grapick's repo](https://github.com/artf/grapick#add-custom-color-picker) to get more about it. | `undefined` |
+| `selectEdgeStops` | Select, by default, the edge color stops of the gradient picker. | `true` |
 
 
 
