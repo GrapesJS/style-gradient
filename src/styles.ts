@@ -2,9 +2,6 @@ import type grapesjs from 'grapesjs';
 import Grapick from 'grapick';
 import { PluginOptions } from '.';
 
-const cpKey = 'data-cp';
-let inputDirection, inputType;
-
 const getColor = (color: any) => {
   let cl = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
   return cl.replace(/ /g, '');
@@ -49,13 +46,10 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
   const em = editor.getModel();
   const { Styles } = editor;
   let { colorPicker } = config;
-  let lastOpts = {};
   const defaultCpAttr = '[data-toggle="handler-color-wrap"]';
   const defDir = [ 'top', 'right', 'bottom', 'left' ];
-  const updateLastOpts = (opts: any) => {
-    lastOpts = opts || { fromTarget: 1, avoidStore: 1 };
-    setTimeout(() => lastOpts = {});
-  };
+  const defTypes = ['radial', 'linear', 'repeating-radial', 'repeating-linear'];
+
   const clearHandler = (handler: any) => {
     const el = handler.getEl().querySelector(defaultCpAttr);
     // @ts-ignore
@@ -63,7 +57,11 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
     $el.spectrum && $el.spectrum('destroy');
   };
 
-  Styles.addType('gradient', { // TODO change to 'gradient-picker'
+  const getValidDir = (value: string) => {
+    return defDir.filter(dir => value.indexOf(dir) > -1)[0];
+  }
+
+  Styles.addType('gradient', {
     create({ change }: any) {
       const el = document.createElement('div');
       el.className = 'gp-container';
@@ -128,22 +126,27 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
   const PROP_DIR = `${PROP_GRADIENT}-dir`;
   const PROP_TYPE = `${PROP_GRADIENT}-type`;
 
+  const getGrapickFromProperty = (property: any) => {
+    const propGrad = property.getProperty(PROP_GRADIENT);
+    return propGrad.view.gp;
+  }
+
   Styles.addBuiltIn('background-image', {
     type: 'composite',
-    fromStyle(style: any, { property, name }: any ) {
+    fromStyle(style: any, { name }: any ) {
       const value = style[name] || '';
       const parsedGrad = parseGradient(value);
-      console.log('fromStyle', { value, name, property, parsedGrad });
       return {
         [PROP_GRADIENT]: value,
-        [PROP_DIR]: parsedGrad.direction,
+        [PROP_DIR]: getValidDir(parsedGrad.direction),
         [PROP_TYPE]: parsedGrad.type,
       };
     },
-    toStyle(values: any, { name }: any) {
-      // const parsedGrad = parseGradient(values[PROP_GRADIENT]);
-      // console.log('toStyle', { values, name, parsedGrad });
-      return { [name]: values[PROP_GRADIENT] };
+    toStyle(values: any, { name, property }: any) {
+      const gp = getGrapickFromProperty(property);
+      const dirValue = property.getProperty(PROP_DIR).getValue();
+      const typeValue = property.getProperty(PROP_TYPE).getValue();
+      return { [name]: gp.getValue(typeValue, dirValue) };
     },
     properties: [
       {
@@ -152,21 +155,6 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
         type: 'gradient',
         full: true,
         defaults: 'none',
-        // onChange({ property, to, ...rest }: any) {
-        //   console.log('on gradient change', {
-        //     property, to, rest,
-        //   });
-        //   if (to.value) {
-        //     // const option = property.getOption();
-        //     // const props = { ...(option.propValue || {}) };
-        //     // const propToUp = property.getParent().getProperty('value');
-        //     // const unit = propToUp.getUnit();
-        //     // if (!unit || props?.units.indexOf(unit) < 0) {
-        //     //   props.unit = props?.units[0] || '';
-        //     // }
-        //     // propToUp.up(props);
-        //   }
-        // }
       },
       {
         name: 'Direction',
@@ -174,12 +162,11 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
         type: 'select',
         defaults: 'right',
         options: defDir.map(value => ({ value })),
-        onChange({ property, to, ...rest }: any) {
+        onChange({ property, to }: any) {
           if (to.value) {
-            const propGrad = property.getParent().getProperty(PROP_GRADIENT);
-            const gp = propGrad.view.gp;
-            gp.setDirection(to.value);
-            console.log({ gp, value: to.value })
+            const gp = getGrapickFromProperty(property.getParent());
+            const gdValue = gp.getValue();
+            gdValue && gp.setDirection(to.value, { silent: true });
           }
         }
       },
@@ -188,12 +175,14 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
         defaults: 'linear',
         type: 'select',
         property: PROP_TYPE,
-        options: [
-          {value: 'radial'},
-          {value: 'linear'},
-          {value: 'repeating-radial'},
-          {value: 'repeating-linear'},
-        ]
+        options: defTypes.map(value => ({ value })),
+        onChange({ property, to }: any) {
+          if (to.value) {
+            const gp = getGrapickFromProperty(property.getParent());
+            const gdValue = gp.getValue();
+            gdValue && gp.setType(to.value, { silent: true });
+          }
+        }
       }
     ]
   });
