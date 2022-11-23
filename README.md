@@ -31,6 +31,8 @@ This plugins adds a new `gradient` property to the GrapesJS's StyleManager by us
   * `https://unpkg.com/grapesjs-style-gradient`
 * NPM
   * `npm i grapesjs-style-gradient`
+* GIT
+  * `git clone https://github.com/artf/grapesjs-style-gradient.git`
 
 
 
@@ -38,6 +40,7 @@ This plugins adds a new `gradient` property to the GrapesJS's StyleManager by us
 
 ## Usage
 
+Directly in the browser.
 ```html
 <link href="https://unpkg.com/grapesjs/dist/css/grapes.min.css" rel="stylesheet"/>
 <link href="https://unpkg.com/grapick/dist/grapick.min.css" rel="stylesheet">
@@ -49,13 +52,28 @@ This plugins adds a new `gradient` property to the GrapesJS's StyleManager by us
 <script type="text/javascript">
   var editor = grapesjs.init({
       container : '#gjs',
-      ...
+      // ...
       plugins: ['grapesjs-style-gradient'],
       pluginsOpts: {
         'grapesjs-style-gradient': {}
       }
   });
 </script>
+```
+
+Modern javascript
+```js
+import grapesjs from 'grapesjs';
+import plugin from 'grapesjs-style-gradient';
+
+const editor = grapesjs.init({
+  container : '#gjs',
+  // ...
+  plugins: [plugin],
+  pluginsOpts: {
+    [plugin]: { /* options */ }
+  }
+});
 ```
 
 
