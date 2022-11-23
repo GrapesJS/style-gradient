@@ -1,4 +1,5 @@
 import type grapesjs from 'grapesjs';
+// @ts-ignore
 import Grapick from 'grapick';
 import { PluginOptions } from '.';
 
