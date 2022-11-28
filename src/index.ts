@@ -1,6 +1,8 @@
 import type grapesjs from 'grapesjs';
 import loadStyles from './styles';
 
+export { parseGradient } from './styles';
+
 export type PluginOptions = {
   /**
    * Grapick options.

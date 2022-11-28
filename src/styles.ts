@@ -3,6 +3,19 @@ import type grapesjs from 'grapesjs';
 import Grapick from 'grapick';
 import { PluginOptions } from '.';
 
+interface GradientStop {
+  color: string;
+  position: string;
+};
+
+export interface GradientParseResult {
+  direction: string;
+  type: string;
+  content: string;
+  colors: string;
+  stops: GradientStop[],
+}
+
 const getColor = (color: any) => {
   let cl = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
   return cl.replace(/ /g, '');
@@ -10,24 +23,30 @@ const getColor = (color: any) => {
 
 const typeName = (name: string) => `${name}-gradient(`;
 
-const parseGradient = (value: string) => {
+/**
+ * Parse CSS gradient value
+ * @param value
+ */
+export const parseGradient = (value: string): GradientParseResult => {
   const start = value.indexOf('(') + 1;
   const end = value.lastIndexOf(')');
-  const gradients = value.substring(start, end);
-  const values = gradients.split(/,(?![^(]*\)) /);
-  const result = {
+  const content = value.substring(start, end);
+  const values = content.split(/,(?![^(]*\)) /);
+  const result: GradientParseResult = {
     direction: 'left',
     type: 'linear',
-    gradients,
-    values,
+    content,
+    colors: content,
+    stops: [],
   };
 
-  if (!gradients) {
+  if (!content) {
     return result;
   }
 
   if (values.length > 2) {
     result.direction = values.shift()!;
+    result.colors = values.join(', ');
   }
 
   let typeFound = false;
@@ -39,6 +58,13 @@ const parseGradient = (value: string) => {
     }
   });
 
+  result.stops = values.map(value => {
+    const parts = value.split(' ');
+    const position = parts.pop()!;
+    const color = parts.join(' ');
+    return { color, position };
+  });
+
   return result;
 }
 
@@ -47,7 +73,7 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
   const em = editor.getModel();
   const { Styles } = editor;
   let { colorPicker, builtInType } = config;
-  const styleTypeId = config.styleType!;
+  const styleTypeId = config.styleType;
   const defaultCpAttr = '[data-toggle="handler-color-wrap"]';
   const defDir = [ 'top', 'right', 'bottom', 'left' ];
   const defTypes = ['radial', 'linear', 'repeating-radial', 'repeating-linear'];
@@ -63,7 +89,7 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
     return defDir.filter(dir => value.indexOf(dir) > -1)[0];
   }
 
-  Styles.addType(styleTypeId, {
+  styleTypeId && Styles.addType(styleTypeId, {
     create({ change }: any) {
       const el = document.createElement('div');
       el.className = 'gp-container';
