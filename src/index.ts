@@ -1,7 +1,7 @@
 import type grapesjs from 'grapesjs';
 import loadStyles from './styles';
 
-export { parseGradient } from './styles';
+export { parseGradient, toGradient, getValidDir, GRAD_DIRS, GRAD_TYPES } from './styles';
 
 export type PluginOptions = {
   /**
