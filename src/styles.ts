@@ -24,14 +24,13 @@ const getColor = (color: any) => {
 const typeName = (name: string) => `${name}-gradient(`;
 
 /**
- * Parse CSS gradient value
- * @param value
+ * Parse CSS gradient value.
  */
 export const parseGradient = (value: string): GradientParseResult => {
   const start = value.indexOf('(') + 1;
   const end = value.lastIndexOf(')');
   const content = value.substring(start, end);
-  const values = content.split(/,(?![^(]*\)) /);
+  const values = content.split(/,(?![^(]*\))/);
   const result: GradientParseResult = {
     direction: 'left',
     type: 'linear',
@@ -46,7 +45,7 @@ export const parseGradient = (value: string): GradientParseResult => {
 
   if (values.length > 2) {
     result.direction = values.shift()!;
-    result.colors = values.join(', ');
+    result.colors = values.join(',').trim();
   }
 
   let typeFound = false;
@@ -60,13 +59,48 @@ export const parseGradient = (value: string): GradientParseResult => {
 
   result.stops = values.map(value => {
     const parts = value.split(' ');
-    const position = parts.pop()!;
-    const color = parts.join(' ');
+    const position = (parts.length > 1 ? parts.pop()! : '').trim();
+    const color = parts.join(' ').trim();
     return { color, position };
   });
 
   return result;
+};
+
+/**
+ * Get CSS gradient value.
+ */
+export const toGradient = (type: string, angle: string, color: string): string => {
+  const angles = [...GRAD_DIRS, 'center'];
+  let angleValue = angle;
+
+  if (
+    ['linear', 'repeating-linear'].indexOf(type) >= 0
+    && angles.indexOf(angleValue) >= 0
+  ) {
+    angleValue = angleValue === 'center' ? 'to right' : `to ${angleValue}`;
+  }
+
+  if (
+    ['radial', 'repeating-radial'].indexOf(type) >= 0
+    && angles.indexOf(angleValue) >= 0
+  ) {
+    angleValue = `circle at ${angleValue}`;
+  }
+
+  return color ? `${type}-gradient(${angleValue}, ${color})` : '';
+};
+
+export const getValidDir = (value: string) => {
+  return GRAD_DIRS.filter(dir => value.indexOf(dir) > -1)[0];
 }
+
+export const GRAD_DIRS = ['right', 'bottom', 'left', 'top'];
+export const GRAD_TYPES = ['linear', 'radial', 'repeating-linear', 'repeating-radial'];
+const defaultCpAttr = '[data-toggle="handler-color-wrap"]';
+const PROP_GRADIENT = 'background-image-gradient';
+const PROP_DIR = `${PROP_GRADIENT}-dir`;
+const PROP_TYPE = `${PROP_GRADIENT}-type`;
 
 export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
   // @ts-ignore
@@ -74,9 +108,6 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
   const { Styles } = editor;
   let { colorPicker, builtInType } = config;
   const styleTypeId = config.styleType;
-  const defaultCpAttr = '[data-toggle="handler-color-wrap"]';
-  const defDir = [ 'top', 'right', 'bottom', 'left' ];
-  const defTypes = ['radial', 'linear', 'repeating-radial', 'repeating-linear'];
 
   const clearHandler = (handler: any) => {
     const el = handler.getEl().querySelector(defaultCpAttr);
@@ -84,10 +115,6 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
     const $el = editor.$(el);
     $el.spectrum && $el.spectrum('destroy');
   };
-
-  const getValidDir = (value: string) => {
-    return defDir.filter(dir => value.indexOf(dir) > -1)[0];
-  }
 
   styleTypeId && Styles.addType(styleTypeId, {
     create({ change }: any) {
@@ -150,31 +177,26 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
     },
   });
 
-  const PROP_GRADIENT = 'background-image-gradient';
-  const PROP_DIR = `${PROP_GRADIENT}-dir`;
-  const PROP_TYPE = `${PROP_GRADIENT}-type`;
-
-  const getGrapickFromProperty = (property: any) => {
-    const propGrad = property.getProperty(PROP_GRADIENT);
-    return propGrad.view.gp;
-  }
-
   builtInType && Styles.addBuiltIn(builtInType, {
     type: 'composite',
-    fromStyle(style: any, { name }: any ) {
-      const value = style[name] || '';
-      const parsedGrad = parseGradient(value);
-      return {
-        [PROP_GRADIENT]: value,
-        [PROP_DIR]: getValidDir(parsedGrad.direction),
-        [PROP_TYPE]: parsedGrad.type,
+    fromStyle(style: any, { name }: any) {
+      const parsed = parseGradient(style[name] || '');
+      const gradType = parsed.type || GRAD_TYPES[0];
+      const gradDir = getValidDir(parsed.direction) || GRAD_DIRS[0];
+      const result = {
+        [PROP_GRADIENT]: toGradient(gradType, gradDir, parsed.colors),
+        [PROP_TYPE]: gradType,
+        [PROP_DIR]: gradDir,
       };
+      return result;
     },
-    toStyle(values: any, { name, property }: any) {
-      const gp = getGrapickFromProperty(property);
-      const dirValue = property.getProperty(PROP_DIR).getValue();
-      const typeValue = property.getProperty(PROP_TYPE).getValue();
-      return { [name]: gp.getValue(typeValue, dirValue) };
+    toStyle(values: any, { name }: any) {
+      const gradValue = values[PROP_GRADIENT] || '';
+      const gradType = values[PROP_TYPE] || GRAD_TYPES[0];
+      const gradDir = values[PROP_DIR] || GRAD_DIRS[0];
+      const parsed = parseGradient(gradValue);
+      const result = toGradient(gradType, gradDir, parsed.colors);
+      return { [name]: result };
     },
     properties: [
       {
@@ -189,28 +211,14 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
         property: PROP_DIR,
         type: 'select',
         defaults: 'right',
-        options: defDir.map(value => ({ value })),
-        onChange({ property, to }: any) {
-          if (to.value) {
-            const gp = getGrapickFromProperty(property.getParent());
-            const gdValue = gp.getValue();
-            gdValue && gp.setDirection(to.value, { silent: true });
-          }
-        }
+        options: GRAD_DIRS.map(value => ({ value })),
       },
       {
         name: 'Type',
         defaults: 'linear',
         type: 'select',
         property: PROP_TYPE,
-        options: defTypes.map(value => ({ value })),
-        onChange({ property, to }: any) {
-          if (to.value) {
-            const gp = getGrapickFromProperty(property.getParent());
-            const gdValue = gp.getValue();
-            gdValue && gp.setType(to.value, { silent: true });
-          }
-        }
+        options: GRAD_TYPES.map(value => ({ value })),
       }
     ]
   });
