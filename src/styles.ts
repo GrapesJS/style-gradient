@@ -201,22 +201,22 @@ export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
     properties: [
       {
         name: ' ',
-        property: PROP_GRADIENT,
-        type: styleTypeId,
         full: true,
         defaults: 'none',
+        type: styleTypeId,
+        property: PROP_GRADIENT,
       },
       {
         name: 'Direction',
-        property: PROP_DIR,
         type: 'select',
         defaults: 'right',
+        property: PROP_DIR,
         options: GRAD_DIRS.map(value => ({ value })),
       },
       {
         name: 'Type',
-        defaults: 'linear',
         type: 'select',
+        defaults: 'linear',
         property: PROP_TYPE,
         options: GRAD_TYPES.map(value => ({ value })),
       }
