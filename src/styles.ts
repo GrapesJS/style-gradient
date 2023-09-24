@@ -1,4 +1,4 @@
-import type grapesjs from 'grapesjs';
+import { Editor } from 'grapesjs';
 // @ts-ignore
 import Grapick from 'grapick';
 import { PluginOptions } from '.';
@@ -102,7 +102,7 @@ const PROP_GRADIENT = 'background-image-gradient';
 const PROP_DIR = `${PROP_GRADIENT}-dir`;
 const PROP_TYPE = `${PROP_GRADIENT}-type`;
 
-export default (editor: grapesjs.Editor, config: PluginOptions = {}) => {
+export default (editor: Editor, config: PluginOptions = {}) => {
   // @ts-ignore
   const em = editor.getModel();
   const { Styles } = editor;
