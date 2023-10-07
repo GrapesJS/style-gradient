@@ -8,7 +8,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/artf/grapesjs-style-gradient.git"
+    "url": "https://github.com/GrapesJS/style-gradient.git"
   },
   "scripts": {
     "start": "grapesjs-cli serve",
