@@ -1,4 +1,4 @@
-import { Editor } from 'grapesjs';
+import type { Editor } from 'grapesjs';
 // @ts-ignore
 import Grapick from 'grapick';
 import { PluginOptions } from '.';
@@ -103,7 +103,6 @@ const PROP_DIR = `${PROP_GRADIENT}-dir`;
 const PROP_TYPE = `${PROP_GRADIENT}-type`;
 
 export default (editor: Editor, config: PluginOptions = {}) => {
-  // @ts-ignore
   const em = editor.getModel();
   const { Styles } = editor;
   let { colorPicker, builtInType } = config;
@@ -111,13 +110,12 @@ export default (editor: Editor, config: PluginOptions = {}) => {
 
   const clearHandler = (handler: any) => {
     const el = handler.getEl().querySelector(defaultCpAttr);
-    // @ts-ignore
     const $el = editor.$(el);
     $el.spectrum && $el.spectrum('destroy');
   };
 
-  styleTypeId && Styles.addType(styleTypeId, {
-    create({ change }: any) {
+  styleTypeId && Styles.addType<{ gp?: any }>(styleTypeId, {
+    create({ change }) {
       const el = document.createElement('div');
       el.className = 'gp-container';
       el.style.width = '100%';
@@ -157,10 +155,10 @@ export default (editor: Editor, config: PluginOptions = {}) => {
 
       return el;
     },
-    emit({ updateStyle }: any, { partial, value }: any) {
+    emit({ updateStyle }, { partial, value }) {
       updateStyle(value, { partial });
     },
-    update({ value }: any) {
+    update({ value }) {
       const { gp } = this;
       if (gp.getValue() === value) return;
       const handlers = gp.getHandlers();
@@ -179,6 +177,7 @@ export default (editor: Editor, config: PluginOptions = {}) => {
 
   builtInType && Styles.addBuiltIn(builtInType, {
     type: 'composite',
+    // @ts-ignore
     fromStyle(style: any, { name }: any) {
       const parsed = parseGradient(style[name] || '');
       const gradType = parsed.type || GRAD_TYPES[0];

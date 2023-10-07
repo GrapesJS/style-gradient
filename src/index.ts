@@ -1,4 +1,4 @@
-import { Plugin } from 'grapesjs';
+import type { Plugin } from 'grapesjs';
 import loadStyles from './styles';
 
 export { parseGradient, toGradient, getValidDir, GRAD_DIRS, GRAD_TYPES } from './styles';
@@ -39,7 +39,7 @@ export type PluginOptions = {
   builtInType?: string | false,
 };
 
-const plugin: Plugin =  (editor, opts = {}) => {
+const plugin: Plugin<PluginOptions> =  (editor, opts = {}) => {
   const options: PluginOptions = {
     grapickOpts: {},
     selectEdgeStops: true,
