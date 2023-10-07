@@ -37,7 +37,7 @@ This plugins adds a new `gradient` property to the GrapesJS's StyleManager by us
 * NPM
   * `npm i grapesjs-style-gradient`
 * GIT
-  * `git clone https://github.com/artf/grapesjs-style-gradient.git`
+  * `git clone https://github.com/GrapesJS/style-gradient.git`
 
 
 
@@ -107,8 +107,8 @@ editor.StyleManager.addProperty('decorations', {
 Clone the repository
 
 ```sh
-$ git clone https://github.com/artf/grapesjs-style-gradient.git
-$ cd grapesjs-style-gradient
+$ git clone https://github.com/GrapesJS/style-gradient.git
+$ cd style-gradient
 ```
 
 Install dependencies
