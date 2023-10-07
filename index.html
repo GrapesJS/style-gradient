@@ -53,13 +53,12 @@
       </div>
     </div>
     <script>
-      setTimeout(function() {
-        console.log('plugin', window['grapesjs-style-gradient'])
+      window.onload = () => {
         window.editor = grapesjs.init({
-          fromElement: 1,
+          fromElement: true,
           container: '#gjs',
           height: '100%',
-          storageManager: { autoload: 0 },
+          storageManager: false,
           plugins: ['grapesjs-style-gradient'],
           pluginsOpts: {
             'grapesjs-style-gradient': {
@@ -78,7 +77,7 @@
           type: 'gradient',
           defaults: 'none'
         });
-      },10)
+      };
     </script>
   </body>
 </html>
